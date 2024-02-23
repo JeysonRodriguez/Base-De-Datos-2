@@ -1,0 +1,85 @@
+CREATE DATABASE Cartera_Electronica;
+USE Cartera_Electronica;
+
+-- Tabla para la información del usuario
+CREATE TABLE user (
+    user_id INT PRIMARY KEY,
+    name VARCHAR(100),
+    password VARCHAR(255),
+    salt VARCHAR(255),
+    balance DECIMAL(10, 2),
+    UNIQUE (name)
+);
+
+-- Tabla para los detalles del usuario
+CREATE TABLE user_details (
+    user_id INT PRIMARY KEY,
+    account_no VARCHAR(20),
+    type VARCHAR(50),
+    phone VARCHAR(15),
+    aadhar_doc VARCHAR(20),
+    image BLOB,
+    FOREIGN KEY (user_id) REFERENCES user(user_id)
+);
+
+-- Tabla para la Cartera Electrónica
+CREATE TABLE transaction (
+    transaction_id INT PRIMARY KEY,
+    request_id INT,
+    from_id INT,
+    to_id INT,
+    amount DECIMAL(10, 2),
+    reason VARCHAR(255),
+    status VARCHAR(50),
+    timestamp TIMESTAMP,
+    category VARCHAR(50),
+    request_send VARCHAR(10),
+    FOREIGN KEY (from_id) REFERENCES user(user_id),
+    FOREIGN KEY (to_id) REFERENCES user(user_id)
+);
+
+-- Tabla para las relaciones de amistad entre usuarios
+CREATE TABLE friend (
+    user_id INT,
+    friend_id INT,
+    PRIMARY KEY (user_id, friend_id),
+    FOREIGN KEY (user_id) REFERENCES user(user_id),
+    FOREIGN KEY (friend_id) REFERENCES user(user_id)
+);
+
+-- Inserción de datos en la tabla user
+INSERT INTO user (user_id, name, password, salt, balance)
+VALUES
+    (1, 'JuanPerez', 'contrasena1', 'salt1', 1000.00),
+    (2, 'MariaGomez', 'contrasena2', 'salt2', 1500.00),
+    (3, 'CarlosRodriguez', 'contrasena3', 'salt3', 2000.00),
+    (4, 'LauraMartinez', 'contrasena4', 'salt4', 800.00),
+    (5, 'PedroSanchez', 'contrasena5', 'salt5', 1200.00);
+
+-- Inserción de datos en la tabla user_details
+INSERT INTO user_details (user_id, account_no, type, phone, aadhar_doc, image)
+VALUES
+    (1, '123456789', 'Ahorros', '123-456-7890', 'AADHAR123', NULL),
+    (2, '987654321', 'Corriente', '987-654-3210', 'AADHAR987', NULL),
+    (3, '567890123', 'Ahorros', '567-890-1230', 'AADHAR567', NULL),
+    (4, '012345678', 'Corriente', '012-345-6789', 'AADHAR012', NULL),
+    (5, '789012345', 'Ahorros', '789-012-3456', 'AADHAR789', NULL);
+
+-- Inserción de datos en la tabla friend
+INSERT INTO friend (user_id, friend_id)
+VALUES
+    (1, 2),
+    (1, 3),
+    (2, 4),
+    (3, 5),
+    (4, 5);
+
+-- Inserción de datos en la tabla transaction
+INSERT INTO transaction (transaction_id, request_id, from_id, to_id, amount, reason, status, timestamp, category, request_send)
+VALUES
+    (1, 101, 1, 2, 200.00, 'Pago de deuda', 'Completada', CURRENT_TIMESTAMP, 'Transferencia', 'send'),
+    (2, 102, 3, 1, 150.00, 'Gasto compartido', 'Pendiente', CURRENT_TIMESTAMP, 'Gasto', 'request'),
+    (3, 103, 4, 5, 50.00, 'Préstamo', 'Aprobada', CURRENT_TIMESTAMP, 'Préstamo', 'send'),
+    (4, 104, 2, 4, 100.00, 'Reembolso', 'Completada', CURRENT_TIMESTAMP, 'Reembolso', 'send'),
+    (5, 105, 5, 3, 75.00, 'Compra en línea', 'Pendiente', CURRENT_TIMESTAMP, 'Compra', 'request');
+
